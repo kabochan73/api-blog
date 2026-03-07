@@ -1,0 +1,18 @@
+# 環境変数
+.env
+.env.local
+
+# 依存パッケージ
+backend/vendor/
+frontend/node_modules/
+frontend/.next/
+
+# Laravel
+backend/storage/logs/*
+backend/storage/framework/cache/*
+backend/storage/framework/sessions/*
+backend/storage/framework/views/*
+backend/bootstrap/cache/*
+
+# OS
+.DS_Store
