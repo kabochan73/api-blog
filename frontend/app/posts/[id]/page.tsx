@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { cookies } from "next/headers";
 import { getPost } from "@/lib/api";
 
 type Props = {
@@ -7,7 +8,8 @@ type Props = {
 
 export default async function PostPage({ params }: Props) {
   const { id } = await params;
-  const post = await getPost(Number(id));
+  const token = (await cookies()).get("token")?.value;
+  const post = await getPost(Number(id), token);
 
   return (
     <div className="min-h-screen bg-zinc-50">

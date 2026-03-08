@@ -12,15 +12,23 @@ class PostController extends Controller
 {
     public function index(): JsonResponse
     {
-        $posts = Post::with(['user', 'tags'])
-            ->latest()
-            ->get();
+        $query = Post::with(['user', 'tags'])->latest();
 
-        return response()->json($posts);
+        $user = auth('sanctum')->user();
+        if (!$user?->is_admin) {
+            $query->where('status', 'published');
+        }
+
+        return response()->json($query->get());
     }
 
     public function show(Post $post): JsonResponse
     {
+        $user = auth('sanctum')->user();
+        if ($post->status === 'draft' && !$user?->is_admin) {
+            return response()->json(['message' => '投稿が見つかりません'], 404);
+        }
+
         $post->load(['user', 'tags']);
 
         return response()->json($post);
