@@ -1,0 +1,2 @@
+\App\Models\User::where('email', 'kabochan7355@gmail.com')->update(['is_admin' => true]);
+exit

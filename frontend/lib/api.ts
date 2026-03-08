@@ -25,6 +25,20 @@ export type Post = {
   tags: Tag[];
 };
 
+export async function login(email: string, password: string): Promise<string> {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, password }),
+  });
+  if (!res.ok) {
+    const data = await res.json();
+    throw new Error(data.message ?? "ログインに失敗しました");
+  }
+  const data = await res.json();
+  return data.token;
+}
+
 export async function getPosts(): Promise<Post[]> {
   const res = await fetch(`${API_BASE_URL}/posts`, { cache: "no-store" });
   if (!res.ok) throw new Error("投稿一覧の取得に失敗しました");
