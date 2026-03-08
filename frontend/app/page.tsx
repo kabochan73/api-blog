@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getPosts } from "@/lib/api";
 import Header from "@/app/components/Header";
+import PostActions from "@/app/components/PostActions";
 
 export default async function Home() {
   const posts = await getPosts();
@@ -16,11 +17,14 @@ export default async function Home() {
           <ul className="space-y-6">
             {posts.map((post) => (
               <li key={post.id} className="rounded-lg border border-zinc-200 bg-white p-6">
-                <Link href={`/posts/${post.id}`} className="group">
-                  <h2 className="text-xl font-semibold text-zinc-900 group-hover:text-blue-600">
-                    {post.title}
-                  </h2>
-                </Link>
+                <div className="flex items-start justify-between gap-4">
+                  <Link href={`/posts/${post.id}`} className="group">
+                    <h2 className="text-xl font-semibold text-zinc-900 group-hover:text-blue-600">
+                      {post.title}
+                    </h2>
+                  </Link>
+                  <PostActions postId={post.id} />
+                </div>
                 <div className="mt-2 flex items-center gap-3 text-sm text-zinc-500">
                   <span>{post.user.name}</span>
                   <span>·</span>

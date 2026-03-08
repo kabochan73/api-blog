@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { getDrafts } from "@/lib/api";
 import Header from "@/app/components/Header";
+import PostActions from "@/app/components/PostActions";
 
 export default async function DraftsPage() {
   const token = (await cookies()).get("token")?.value;
@@ -27,15 +28,18 @@ export default async function DraftsPage() {
             <ul className="space-y-6">
               {drafts.map((post) => (
                 <li key={post.id} className="rounded-lg bg-white p-6">
-                  <div className="flex items-center gap-2">
-                    <Link href={`/posts/${post.id}`} className="group">
-                      <h2 className="text-xl font-semibold text-zinc-900 group-hover:text-blue-600">
-                        {post.title}
-                      </h2>
-                    </Link>
-                    <span className="rounded-full bg-sky-200 px-2 py-0.5 text-xs font-medium text-sky-600">
-                      下書き
-                    </span>
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex items-center gap-2">
+                      <Link href={`/posts/${post.id}`} className="group">
+                        <h2 className="text-xl font-semibold text-zinc-900 group-hover:text-blue-600">
+                          {post.title}
+                        </h2>
+                      </Link>
+                      <span className="rounded-full bg-sky-200 px-2 py-0.5 text-xs font-medium text-sky-600">
+                        下書き
+                      </span>
+                    </div>
+                    <PostActions postId={post.id} />
                   </div>
                   <div className="mt-2 flex items-center gap-3 text-sm text-zinc-500">
                     <span>{post.user.name}</span>

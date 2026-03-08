@@ -70,6 +70,34 @@ export async function getTags(): Promise<Tag[]> {
   return res.json();
 }
 
+export async function deletePost(id: number, token: string): Promise<void> {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/posts/${id}`, {
+    method: "DELETE",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error("投稿の削除に失敗しました");
+}
+
+export async function updatePost(
+  id: number,
+  data: { title: string; body: string; status: "draft" | "published"; tag_ids: number[] },
+  token: string
+): Promise<Post> {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/posts/${id}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err.message ?? "投稿の更新に失敗しました");
+  }
+  return res.json();
+}
+
 export async function createPost(
   data: { title: string; body: string; status: "draft" | "published"; tag_ids: number[] },
   token: string
