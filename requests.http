@@ -1,0 +1,15 @@
+@baseUrl = http://localhost:8000/api
+@token = 4|Gxk82OkaRZ8oqYCrWYulQBx8ZkvGqUgemI7dNNjmd81e3b81
+
+### ログイン
+POST {{baseUrl}}/login
+Content-Type: application/json
+
+{
+  "email": "kabochan7355@gmail.com",
+  "password": "Takumi7355"
+}
+
+### ログアウト
+POST {{baseUrl}}/logout
+Authorization: Bearer {{token}}
