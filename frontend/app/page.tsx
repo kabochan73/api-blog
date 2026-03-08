@@ -1,16 +1,13 @@
 import Link from "next/link";
 import { getPosts } from "@/lib/api";
+import Header from "@/app/components/Header";
 
 export default async function Home() {
   const posts = await getPosts();
 
   return (
     <div className="min-h-screen bg-zinc-50">
-      <header className="border-b border-zinc-200 bg-white">
-        <div className="mx-auto max-w-3xl px-4 py-6">
-          <h1 className="text-2xl font-bold text-zinc-900">Blog</h1>
-        </div>
-      </header>
+      <Header />
 
       <main className="mx-auto max-w-3xl px-4 py-10">
         {posts.length === 0 ? (

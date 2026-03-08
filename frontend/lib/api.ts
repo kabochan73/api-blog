@@ -45,8 +45,46 @@ export async function getPosts(): Promise<Post[]> {
   return res.json();
 }
 
-export async function getPost(id: number): Promise<Post> {
-  const res = await fetch(`${API_BASE_URL}/posts/${id}`, { cache: "no-store" });
-  if (!res.ok) throw new Error("投稿の取得に失敗しました");
+export async function getDrafts(token: string): Promise<Post[]> {
+  const res = await fetch(`${API_BASE_URL}/posts`, {
+    cache: "no-store",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error("下書き一覧の取得に失敗しました");
+  const posts: Post[] = await res.json();
+  return posts.filter((p) => p.status === "draft");
+}
+
+export async function getPost(id: number, token?: string): Promise<Post> {
+  const res = await fetch(`${API_BASE_URL}/posts/${id}`, {
+    cache: "no-store",
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+  });
+  if (!res.ok) throw new Error("投稿が見つかりません");
+  return res.json();
+}
+
+export async function getTags(): Promise<Tag[]> {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tags`);
+  if (!res.ok) throw new Error("タグ一覧の取得に失敗しました");
+  return res.json();
+}
+
+export async function createPost(
+  data: { title: string; body: string; status: "draft" | "published"; tag_ids: number[] },
+  token: string
+): Promise<Post> {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/posts`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err.message ?? "投稿の作成に失敗しました");
+  }
   return res.json();
 }

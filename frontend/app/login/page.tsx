@@ -19,6 +19,7 @@ export default function LoginPage() {
     try {
       const token = await login(email, password);
       localStorage.setItem("token", token);
+      document.cookie = `token=${token}; path=/; max-age=${60 * 60 * 24 * 30}`;
       router.push("/");
     } catch (err) {
       setError(err instanceof Error ? err.message : "ログインに失敗しました");
