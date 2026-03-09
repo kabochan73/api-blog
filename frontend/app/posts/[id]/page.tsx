@@ -2,6 +2,7 @@ import Link from "next/link";
 import { cookies } from "next/headers";
 import { getPost } from "@/lib/api";
 import PostActions from "@/app/components/PostActions";
+import Footer from "@/app/components/Footer";
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -13,7 +14,7 @@ export default async function PostPage({ params }: Props) {
   const post = await getPost(Number(id), token);
 
   return (
-    <div className="min-h-screen bg-zinc-50">
+    <div className="min-h-screen bg-zinc-50 flex flex-col">
       <header className="border-b border-zinc-200 bg-white">
         <div className="mx-auto flex max-w-3xl items-center justify-between px-4 py-6">
           <Link href="/" className="text-sm text-zinc-500 hover:text-zinc-900">
@@ -23,7 +24,7 @@ export default async function PostPage({ params }: Props) {
         </div>
       </header>
 
-      <main className="mx-auto max-w-3xl px-4 py-10">
+      <main className="mx-auto max-w-3xl w-full px-4 py-10 flex-1">
         <article className="rounded-lg border border-zinc-200 bg-white p-8">
           <h1 className="text-3xl font-bold text-zinc-900">{post.title}</h1>
 
@@ -55,6 +56,7 @@ export default async function PostPage({ params }: Props) {
           </div>
         </article>
       </main>
+      <Footer />
     </div>
   );
 }

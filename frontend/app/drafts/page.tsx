@@ -35,9 +35,6 @@ export default async function DraftsPage() {
                           {post.title}
                         </h2>
                       </Link>
-                      <span className="rounded-full bg-sky-200 px-2 py-0.5 text-xs font-medium text-sky-600">
-                        下書き
-                      </span>
                     </div>
                     <PostActions postId={post.id} />
                   </div>
@@ -47,6 +44,9 @@ export default async function DraftsPage() {
                     <span>
                       {new Date(post.created_at).toLocaleDateString("ja-JP")}
                     </span>
+                      <span className="rounded-full bg-sky-200 px-2 py-0.5 text-xs font-medium text-sky-600">
+                        下書き
+                      </span>
                   </div>
                   {post.tags.length > 0 && (
                     <div className="mt-3 flex flex-wrap gap-2">
