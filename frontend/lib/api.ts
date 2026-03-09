@@ -75,7 +75,7 @@ export async function getPost(id: number, token?: string): Promise<Post> {
 }
 
 export async function getTags(): Promise<Tag[]> {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tags`);
+  const res = await fetch(`${API_BASE_URL}/tags`);
   if (!res.ok) throw new Error("タグ一覧の取得に失敗しました");
   return res.json();
 }

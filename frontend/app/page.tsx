@@ -1,5 +1,7 @@
 import Link from "next/link";
-import { getPosts } from "@/lib/api";
+import { cookies } from "next/headers";
+import { getPosts, getTags } from "@/lib/api";
+import { formatDate } from "@/lib/date";
 import Header from "@/app/components/Header";
 import PostActions from "@/app/components/PostActions";
 import Footer from "@/app/components/Footer";
@@ -11,7 +13,12 @@ type Props = {
 export default async function Home({ searchParams }: Props) {
   const { page, tag } = await searchParams;
   const currentPage = Math.max(1, Number(page) || 1);
-  const { data: posts, last_page } = await getPosts(currentPage, tag);
+  const [{ data: posts, last_page }, allTags] = await Promise.all([
+    getPosts(currentPage, tag),
+    getTags(),
+  ]);
+  const activeTag = tag ? allTags.find((t) => t.slug === tag) : undefined;
+  const isLoggedIn = !!(await cookies()).get("token")?.value;
 
   function pageHref(p: number) {
     const params = new URLSearchParams({ page: String(p) });
@@ -25,10 +32,22 @@ export default async function Home({ searchParams }: Props) {
 
       <main className="mx-auto max-w-3xl w-full px-4 py-10 flex-1">
         {tag && (
-          <div className="mb-6 flex items-center gap-2">
-            <span className="text-sm text-zinc-500">タグ：</span>
-            <span className="rounded-full bg-zinc-900 px-3 py-1 text-xs text-white">{tag}</span>
-            <Link href="/" className="text-xs text-zinc-400 hover:text-zinc-700">✕ 解除</Link>
+          <div className="mb-6 space-y-3">
+            <Link href="/" className="inline-flex items-center text-sm text-zinc-500 hover:text-zinc-900">
+              ← 投稿一覧に戻る
+            </Link>
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-zinc-500">タグ：</span>
+              <span
+                className="rounded-full px-3 py-1 text-xs text-white"
+                style={{ backgroundColor: activeTag?.color ?? "#18181b" }}
+              >
+                {activeTag?.name ?? tag}
+              </span>
+              {isLoggedIn && (
+                <Link href="/" className="text-xs text-zinc-400 hover:text-zinc-700">✕ 解除</Link>
+              )}
+            </div>
           </div>
         )}
         {posts.length === 0 ? (
@@ -36,7 +55,7 @@ export default async function Home({ searchParams }: Props) {
         ) : (
           <ul className="space-y-6">
             {posts.map((post) => (
-              <li key={post.id} className="rounded-lg border border-zinc-200 bg-white p-6">
+              <li key={post.id} className="rounded-lg border border-zinc-200 bg-white p-6 shadow-md transition-all duration-400 hover:-translate-y-1 hover:shadow-lg">
                 <div className="flex items-start justify-between gap-4">
                   <Link href={`/posts/${post.id}`} className="group">
                     <h2 className="text-xl font-semibold text-zinc-900 group-hover:text-blue-600">
@@ -49,9 +68,7 @@ export default async function Home({ searchParams }: Props) {
                   <span>{post.user.name}</span>
                   <span>·</span>
                   <span>
-                    {post.published_at
-                      ? new Date(post.published_at).toLocaleDateString("ja-JP")
-                      : new Date(post.created_at).toLocaleDateString("ja-JP")}
+                    {formatDate(post.published_at ?? post.created_at)}
                   </span>
                 </div>
                 {post.tags.length > 0 && (

@@ -4,6 +4,7 @@ import { getPost } from "@/lib/api";
 import PostActions from "@/app/components/PostActions";
 import Footer from "@/app/components/Footer";
 import MarkdownContent from "@/app/components/MarkdownContent";
+import { formatDate } from "@/lib/date";
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -26,16 +27,14 @@ export default async function PostPage({ params }: Props) {
       </header>
 
       <main className="mx-auto max-w-3xl w-full px-4 py-10 flex-1">
-        <article className="rounded-lg border border-zinc-200 bg-white p-8">
+        <article className="rounded-lg border border-zinc-200 bg-white p-8 shadow-md">
           <h1 className="text-3xl font-bold text-zinc-900">{post.title}</h1>
 
           <div className="mt-3 flex items-center gap-3 text-sm text-zinc-500">
             <span>{post.user.name}</span>
             <span>·</span>
             <span>
-              {post.published_at
-                ? new Date(post.published_at).toLocaleDateString("ja-JP")
-                : new Date(post.created_at).toLocaleDateString("ja-JP")}
+              {formatDate(post.published_at ?? post.created_at)}
             </span>
           </div>
 
@@ -55,6 +54,12 @@ export default async function PostPage({ params }: Props) {
 
           <div className="mt-8">
             <MarkdownContent content={post.body} />
+          </div>
+
+          <div className="mt-10 border-t border-zinc-100 pt-6">
+            <Link href="/" className="text-sm text-zinc-500 hover:text-zinc-900 flex justify-end">
+              ← 一覧に戻る
+            </Link>
           </div>
         </article>
       </main>
