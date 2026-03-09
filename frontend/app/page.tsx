@@ -131,7 +131,7 @@ export default async function Home({ searchParams }: Props) {
           {/* タグサイドバー (1/4) */}
           <aside className="col-span-1">
             <div className="rounded-lg border border-zinc-200 bg-white p-4 shadow-sm sticky top-6">
-              <h2 className="text-sm font-semibold text-zinc-900 mb-3">タグ</h2>
+              <h2 className="text-sm font-semibold text-zinc-900 mb-3">タグ検索</h2>
               {allTags.length === 0 ? (
                 <p className="text-xs text-zinc-400">タグがありません</p>
               ) : (
