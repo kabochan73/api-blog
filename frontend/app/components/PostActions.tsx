@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { deletePost } from "@/lib/api";
 
@@ -10,8 +11,12 @@ type Props = {
 
 export default function PostActions({ postId }: Props) {
   const router = useRouter();
-  const isLoggedIn =
-    typeof window !== "undefined" ? !!localStorage.getItem("token") : false;
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setIsLoggedIn(!!localStorage.getItem("token"));
+  }, []);
 
   async function handleDelete() {
     if (!confirm("この投稿を削除しますか？")) return;

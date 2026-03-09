@@ -47,9 +47,10 @@ export type PaginatedResponse<T> = {
   total: number;
 };
 
-export async function getPosts(page = 1, tag?: string): Promise<PaginatedResponse<Post>> {
+export async function getPosts(page = 1, tag?: string, search?: string): Promise<PaginatedResponse<Post>> {
   const params = new URLSearchParams({ page: String(page) });
   if (tag) params.set("tag", tag);
+  if (search) params.set("search", search);
   const res = await fetch(`${API_BASE_URL}/posts?${params}`, { cache: "no-store" });
   if (!res.ok) throw new Error("投稿一覧の取得に失敗しました");
   return res.json();

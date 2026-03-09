@@ -19,8 +19,8 @@ export default async function PostPage({ params }: Props) {
     <div className="min-h-screen bg-zinc-50 flex flex-col">
       <header className="border-b border-zinc-200 bg-white">
         <div className="mx-auto flex max-w-3xl items-center justify-between px-4 py-6">
-          <Link href="/" className="text-sm text-zinc-500 hover:text-zinc-900">
-            ← 一覧に戻る
+          <Link href={post.status === "draft" ? "/drafts" : "/"} className="text-sm text-zinc-500 hover:text-zinc-900">
+            ← {post.status === "draft" ? "下書き一覧に戻る" : "一覧に戻る"}
           </Link>
           <PostActions postId={post.id} />
         </div>
@@ -57,8 +57,8 @@ export default async function PostPage({ params }: Props) {
           </div>
 
           <div className="mt-10 border-t border-zinc-100 pt-6">
-            <Link href="/" className="text-sm text-zinc-500 hover:text-zinc-900 flex justify-end">
-              ← 一覧に戻る
+            <Link href={post.status === "draft" ? "/drafts" : "/"} className="text-sm text-zinc-500 hover:text-zinc-900 flex justify-end">
+              ← {post.status === "draft" ? "下書き一覧に戻る" : "一覧に戻る"}
             </Link>
           </div>
         </article>

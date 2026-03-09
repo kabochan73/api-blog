@@ -7,14 +7,14 @@ import PostActions from "@/app/components/PostActions";
 import Footer from "@/app/components/Footer";
 
 type Props = {
-  searchParams: Promise<{ page?: string; tag?: string }>;
+  searchParams: Promise<{ page?: string; tag?: string; search?: string }>;
 };
 
 export default async function Home({ searchParams }: Props) {
-  const { page, tag } = await searchParams;
+  const { page, tag, search } = await searchParams;
   const currentPage = Math.max(1, Number(page) || 1);
   const [{ data: posts, last_page }, allTags] = await Promise.all([
-    getPosts(currentPage, tag),
+    getPosts(currentPage, tag, search),
     getTags(),
   ]);
   const activeTag = tag ? allTags.find((t) => t.slug === tag) : undefined;
@@ -51,7 +51,14 @@ export default async function Home({ searchParams }: Props) {
           </div>
         )}
         {posts.length === 0 ? (
-          <p className="text-zinc-500">投稿がまだありません。</p>
+          <div className="space-y-3">
+            <p className="text-zinc-500">投稿がまだありません。</p>
+            {(tag || search) && (
+              <Link href="/" className="inline-flex items-center text-sm text-zinc-500 hover:text-zinc-900">
+                ← ホームに戻る
+              </Link>
+            )}
+          </div>
         ) : (
           <ul className="space-y-6">
             {posts.map((post) => (

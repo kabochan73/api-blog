@@ -23,6 +23,13 @@ class PostController extends Controller
             $query->whereHas('tags', fn($q) => $q->where('slug', $request->tag));
         }
 
+        if ($request->filled('search')) {
+            $query->where(function ($q) use ($request) {
+                $q->where('title', 'like', "%{$request->search}%")
+                  ->orWhere('body', 'like', "%{$request->search}%");
+            });
+        }
+
         return response()->json($query->paginate(20));
     }
 
