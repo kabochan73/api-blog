@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter, usePathname } from "next/navigation";
 
 export default function Header() {
@@ -9,11 +9,26 @@ export default function Header() {
   const pathname = usePathname();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [search, setSearch] = useState("");
+  const isMounted = useRef(false);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsLoggedIn(!!localStorage.getItem("token"));
   }, []);
+
+  useEffect(() => {
+    if (!isMounted.current) {
+      isMounted.current = true;
+      return;
+    }
+    const base = pathname === "/drafts" ? "/drafts" : "/";
+    const timer = setTimeout(() => {
+      const q = search.trim();
+      router.push(q ? `${base}?search=${encodeURIComponent(q)}` : base);
+    }, 500);
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [search, pathname]);
 
   function handleLogout() {
     localStorage.removeItem("token");

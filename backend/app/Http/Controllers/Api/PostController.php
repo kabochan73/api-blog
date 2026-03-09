@@ -26,11 +26,11 @@ class PostController extends Controller
         if ($request->filled('search')) {
             $query->where(function ($q) use ($request) {
                 $q->where('title', 'like', "%{$request->search}%")
-                  ->orWhere('body', 'like', "%{$request->search}%");
+                    ->orWhere('body', 'like', "%{$request->search}%");
             });
         }
 
-        return response()->json($query->paginate(20));
+        return response()->json($query->paginate(10));
     }
 
     public function show(Post $post): JsonResponse

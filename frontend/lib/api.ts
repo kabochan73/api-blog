@@ -7,6 +7,7 @@ export type Tag = {
   name: string;
   slug: string;
   color: string;
+  posts_count?: number;
 };
 
 export type Post = {
