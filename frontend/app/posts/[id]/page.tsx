@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import { getPost } from "@/lib/api";
 import PostActions from "@/app/components/PostActions";
 import Footer from "@/app/components/Footer";
+import MarkdownContent from "@/app/components/MarkdownContent";
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -51,8 +52,8 @@ export default async function PostPage({ params }: Props) {
             </div>
           )}
 
-          <div className="mt-8 whitespace-pre-wrap text-zinc-700 leading-8">
-            {post.body}
+          <div className="mt-8">
+            <MarkdownContent content={post.body} />
           </div>
         </article>
       </main>

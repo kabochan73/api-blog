@@ -19,7 +19,7 @@ class PostController extends Controller
             $query->where('status', 'published');
         }
 
-        return response()->json($query->get());
+        return response()->json($query->paginate(20));
     }
 
     public function show(Post $post): JsonResponse

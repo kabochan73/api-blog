@@ -4,8 +4,14 @@ import Header from "@/app/components/Header";
 import PostActions from "@/app/components/PostActions";
 import Footer from "@/app/components/Footer";
 
-export default async function Home() {
-  const posts = await getPosts();
+type Props = {
+  searchParams: Promise<{ page?: string }>;
+};
+
+export default async function Home({ searchParams }: Props) {
+  const { page } = await searchParams;
+  const currentPage = Math.max(1, Number(page) || 1);
+  const { data: posts, last_page } = await getPosts(currentPage);
 
   return (
     <div className="min-h-screen bg-zinc-50 flex flex-col">
@@ -50,6 +56,40 @@ export default async function Home() {
               </li>
             ))}
           </ul>
+        )}
+
+        {last_page > 1 && (
+          <div className="mt-10 flex items-center justify-center gap-2">
+            {currentPage > 1 && (
+              <Link
+                href={`/?page=${currentPage - 1}`}
+                className="rounded-md border border-zinc-300 px-4 py-2 text-sm text-zinc-700 hover:bg-zinc-100"
+              >
+                前へ
+              </Link>
+            )}
+            {Array.from({ length: last_page }, (_, i) => i + 1).map((p) => (
+              <Link
+                key={p}
+                href={`/?page=${p}`}
+                className={`rounded-md px-4 py-2 text-sm ${
+                  p === currentPage
+                    ? "bg-zinc-900 text-white"
+                    : "border border-zinc-300 text-zinc-700 hover:bg-zinc-100"
+                }`}
+              >
+                {p}
+              </Link>
+            ))}
+            {currentPage < last_page && (
+              <Link
+                href={`/?page=${currentPage + 1}`}
+                className="rounded-md border border-zinc-300 px-4 py-2 text-sm text-zinc-700 hover:bg-zinc-100"
+              >
+                次へ
+              </Link>
+            )}
+          </div>
         )}
       </main>
       <Footer />

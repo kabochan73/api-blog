@@ -39,8 +39,15 @@ export async function login(email: string, password: string): Promise<string> {
   return data.token;
 }
 
-export async function getPosts(): Promise<Post[]> {
-  const res = await fetch(`${API_BASE_URL}/posts`, { cache: "no-store" });
+export type PaginatedResponse<T> = {
+  data: T[];
+  current_page: number;
+  last_page: number;
+  total: number;
+};
+
+export async function getPosts(page = 1): Promise<PaginatedResponse<Post>> {
+  const res = await fetch(`${API_BASE_URL}/posts?page=${page}`, { cache: "no-store" });
   if (!res.ok) throw new Error("投稿一覧の取得に失敗しました");
   return res.json();
 }
@@ -51,8 +58,8 @@ export async function getDrafts(token: string): Promise<Post[]> {
     headers: { Authorization: `Bearer ${token}` },
   });
   if (!res.ok) throw new Error("下書き一覧の取得に失敗しました");
-  const posts: Post[] = await res.json();
-  return posts.filter((p) => p.status === "draft");
+  const paginated: PaginatedResponse<Post> = await res.json();
+  return paginated.data.filter((p) => p.status === "draft");
 }
 
 export async function getPost(id: number, token?: string): Promise<Post> {

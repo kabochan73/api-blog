@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { getPost, getTags, updatePost, type Tag } from "@/lib/api";
+import MarkdownEditor from "@/app/components/MarkdownEditor";
 
 export default function EditPostPage() {
   const router = useRouter();
@@ -82,13 +83,7 @@ export default function EditPostPage() {
 
           <div>
             <label className="block text-sm font-medium text-zinc-700">本文</label>
-            <textarea
-              value={body}
-              onChange={(e) => setBody(e.target.value)}
-              required
-              rows={12}
-              className="mt-1 w-full rounded-md border border-zinc-300 px-3 py-2 text-sm outline-none focus:border-zinc-500"
-            />
+            <MarkdownEditor value={body} onChange={setBody} />
           </div>
 
           {tags.length > 0 && (
@@ -113,6 +108,7 @@ export default function EditPostPage() {
             </div>
           )}
 
+          <div className="mt-4 flex justify-between gap-2">
           <div>
             <label className="block text-sm font-medium text-zinc-700">公開設定</label>
             <select
@@ -134,6 +130,7 @@ export default function EditPostPage() {
           >
             {loading ? "更新中..." : "更新する"}
           </button>
+          </div>
         </form>
       </main>
     </div>
