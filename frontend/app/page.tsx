@@ -2,15 +2,16 @@ import Link from "next/link";
 import { getPosts } from "@/lib/api";
 import Header from "@/app/components/Header";
 import PostActions from "@/app/components/PostActions";
+import Footer from "@/app/components/Footer";
 
 export default async function Home() {
   const posts = await getPosts();
 
   return (
-    <div className="min-h-screen bg-zinc-50">
+    <div className="min-h-screen bg-zinc-50 flex flex-col">
       <Header />
 
-      <main className="mx-auto max-w-3xl px-4 py-10">
+      <main className="mx-auto max-w-3xl w-full px-4 py-10 flex-1">
         {posts.length === 0 ? (
           <p className="text-zinc-500">投稿がまだありません。</p>
         ) : (
@@ -51,6 +52,7 @@ export default async function Home() {
           </ul>
         )}
       </main>
+      <Footer />
     </div>
   );
 }
