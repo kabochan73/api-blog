@@ -34,6 +34,12 @@ export default function Header() {
               下書き
             </Link>
             <Link
+              href="/tags"
+              className="text-sm font-medium text-zinc-600 hover:text-zinc-900"
+            >
+              タグ管理
+            </Link>
+            <Link
               href="/posts/new"
               className="rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700"
             >

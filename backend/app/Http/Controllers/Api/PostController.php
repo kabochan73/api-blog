@@ -10,13 +10,17 @@ use Illuminate\Support\Str;
 
 class PostController extends Controller
 {
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
         $query = Post::with(['user', 'tags'])->latest();
 
         $user = auth('sanctum')->user();
         if (!$user?->is_admin) {
             $query->where('status', 'published');
+        }
+
+        if ($request->filled('tag')) {
+            $query->whereHas('tags', fn($q) => $q->where('slug', $request->tag));
         }
 
         return response()->json($query->paginate(20));

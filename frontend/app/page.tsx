@@ -5,19 +5,32 @@ import PostActions from "@/app/components/PostActions";
 import Footer from "@/app/components/Footer";
 
 type Props = {
-  searchParams: Promise<{ page?: string }>;
+  searchParams: Promise<{ page?: string; tag?: string }>;
 };
 
 export default async function Home({ searchParams }: Props) {
-  const { page } = await searchParams;
+  const { page, tag } = await searchParams;
   const currentPage = Math.max(1, Number(page) || 1);
-  const { data: posts, last_page } = await getPosts(currentPage);
+  const { data: posts, last_page } = await getPosts(currentPage, tag);
+
+  function pageHref(p: number) {
+    const params = new URLSearchParams({ page: String(p) });
+    if (tag) params.set("tag", tag);
+    return `/?${params}`;
+  }
 
   return (
     <div className="min-h-screen bg-zinc-50 flex flex-col">
       <Header />
 
       <main className="mx-auto max-w-3xl w-full px-4 py-10 flex-1">
+        {tag && (
+          <div className="mb-6 flex items-center gap-2">
+            <span className="text-sm text-zinc-500">タグ：</span>
+            <span className="rounded-full bg-zinc-900 px-3 py-1 text-xs text-white">{tag}</span>
+            <Link href="/" className="text-xs text-zinc-400 hover:text-zinc-700">✕ 解除</Link>
+          </div>
+        )}
         {posts.length === 0 ? (
           <p className="text-zinc-500">投稿がまだありません。</p>
         ) : (
@@ -43,13 +56,15 @@ export default async function Home({ searchParams }: Props) {
                 </div>
                 {post.tags.length > 0 && (
                   <div className="mt-3 flex flex-wrap gap-2">
-                    {post.tags.map((tag) => (
-                      <span
-                        key={tag.id}
-                        className="rounded-full bg-zinc-100 px-3 py-1 text-xs text-zinc-600"
+                    {post.tags.map((t) => (
+                      <Link
+                        key={t.id}
+                        href={`/?tag=${t.slug}`}
+                        className="rounded-full px-3 py-1 text-xs text-white transition-opacity hover:opacity-80"
+                        style={{ backgroundColor: t.color }}
                       >
-                        {tag.name}
-                      </span>
+                        {t.name}
+                      </Link>
                     ))}
                   </div>
                 )}
@@ -62,7 +77,7 @@ export default async function Home({ searchParams }: Props) {
           <div className="mt-10 flex items-center justify-center gap-2">
             {currentPage > 1 && (
               <Link
-                href={`/?page=${currentPage - 1}`}
+                href={pageHref(currentPage - 1)}
                 className="rounded-md border border-zinc-300 px-4 py-2 text-sm text-zinc-700 hover:bg-zinc-100"
               >
                 前へ
@@ -71,7 +86,7 @@ export default async function Home({ searchParams }: Props) {
             {Array.from({ length: last_page }, (_, i) => i + 1).map((p) => (
               <Link
                 key={p}
-                href={`/?page=${p}`}
+                href={pageHref(p)}
                 className={`rounded-md px-4 py-2 text-sm ${
                   p === currentPage
                     ? "bg-zinc-900 text-white"
@@ -83,7 +98,7 @@ export default async function Home({ searchParams }: Props) {
             ))}
             {currentPage < last_page && (
               <Link
-                href={`/?page=${currentPage + 1}`}
+                href={pageHref(currentPage + 1)}
                 className="rounded-md border border-zinc-300 px-4 py-2 text-sm text-zinc-700 hover:bg-zinc-100"
               >
                 次へ

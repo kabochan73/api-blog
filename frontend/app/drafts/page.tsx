@@ -53,7 +53,8 @@ export default async function DraftsPage() {
                       {post.tags.map((tag) => (
                         <span
                           key={tag.id}
-                          className="rounded-full bg-zinc-100 px-3 py-1 text-xs text-zinc-600"
+                          className="rounded-full px-3 py-1 text-xs text-white"
+                          style={{ backgroundColor: tag.color }}
                         >
                           {tag.name}
                         </span>
