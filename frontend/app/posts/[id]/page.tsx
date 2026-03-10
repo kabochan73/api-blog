@@ -33,7 +33,7 @@ export default async function PostPage({ params }: Props) {
             href={post.status === "draft" ? "/drafts" : "/"}
             className="text-sm text-zinc-500 hover:text-zinc-900"
           >
-            ← {post.status === "draft" ? "下書き一覧に戻る" : "一覧に戻る"}
+            {post.status === "draft" ? "下書き一覧に戻る" : "一覧に戻る"}
           </Link>
           <PostActions postId={post.id} />
         </div>
@@ -72,7 +72,7 @@ export default async function PostPage({ params }: Props) {
 
           <div className="mt-10 border-t border-zinc-100 pt-6">
             <Link href={post.status === "draft" ? "/drafts" : "/"} className="text-sm text-zinc-500 hover:text-zinc-900 flex justify-end">
-              ← {post.status === "draft" ? "下書き一覧に戻る" : "一覧に戻る"}
+              {post.status === "draft" ? "下書き一覧に戻る" : "一覧に戻る"}
             </Link>
           </div>
         </article>

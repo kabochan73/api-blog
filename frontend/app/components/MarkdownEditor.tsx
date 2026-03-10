@@ -49,7 +49,7 @@ export default function MarkdownEditor({ value, onChange, rows = 12 }: Props) {
           className="w-full rounded-b-md rounded-tr-md border border-zinc-300 px-3 py-2 text-sm font-mono outline-none focus:border-zinc-500"
         />
       ) : (
-        <div className="min-h-[200px] w-full rounded-b-md rounded-tr-md border border-zinc-300 px-4 py-3 bg-white">
+        <div className="min-h-50 w-full rounded-b-md rounded-tr-md border border-zinc-300 px-4 py-3 bg-white">
           {value ? (
             <MarkdownContent content={value} />
           ) : (
