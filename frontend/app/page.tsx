@@ -37,20 +37,20 @@ export default async function Home({ searchParams }: Props) {
           {/* 投稿エリア (3/4) */}
           <div className="col-span-3">
             {tag && (
-              <div className="mb-6 space-y-3">
-                <div className="flex items-center gap-2">
-                  <span className="text-sm text-zinc-500">タグ：</span>
+              <div className="mb-6 flex items-center justify-between gap-3">
+                <div className="flex items-center gap-3">
                   <span
-                    className="rounded-full px-3 py-1 text-xs text-white"
+                    className="rounded-full px-4 py-1.5 text-sm font-bold text-white shadow-sm"
                     style={{ backgroundColor: activeTag?.color ?? "#18181b" }}
                   >
                     {activeTag?.name ?? tag}
                   </span>
+                  <span className="text-xl font-bold text-zinc-800">タグの記事</span>
                   {isLoggedIn && (
                     <Link href="/" className="text-xs text-zinc-400 hover:text-zinc-700">✕ 解除</Link>
                   )}
                 </div>
-                <Link href="/" className="inline-flex items-center text-sm text-zinc-500 hover:text-zinc-900">
+                <Link href="/" className="text-sm text-zinc-500 hover:text-zinc-900">
                   ← 投稿一覧に戻る
                 </Link>
               </div>

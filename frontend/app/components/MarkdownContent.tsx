@@ -3,14 +3,18 @@
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
+function toId(children: React.ReactNode) {
+  return String(children).toLowerCase().replace(/\s+/g, "-").replace(/[^\w-]/g, "");
+}
+
 export default function MarkdownContent({ content }: { content: string }) {
   return (
     <ReactMarkdown
       remarkPlugins={[remarkGfm]}
       components={{
-        h1: ({ children }) => <h1 className="text-2xl font-bold text-zinc-900 mt-8 mb-4">{children}</h1>,
-        h2: ({ children }) => <h2 className="text-xl font-bold text-zinc-900 mt-6 mb-3">{children}</h2>,
-        h3: ({ children }) => <h3 className="text-lg font-semibold text-zinc-900 mt-5 mb-2">{children}</h3>,
+        h1: ({ children }) => <h1 id={toId(children)} className="text-2xl font-bold text-zinc-900 mt-8 mb-4">{children}</h1>,
+        h2: ({ children }) => <h2 id={toId(children)} className="text-xl font-bold text-zinc-900 mt-6 mb-3">{children}</h2>,
+        h3: ({ children }) => <h3 id={toId(children)} className="text-lg font-semibold text-zinc-900 mt-5 mb-2">{children}</h3>,
         p: ({ children }) => <p className="text-zinc-700 leading-8 mb-4">{children}</p>,
         ul: ({ children }) => <ul className="list-disc list-inside text-zinc-700 mb-4 space-y-1">{children}</ul>,
         ol: ({ children }) => <ol className="list-decimal list-inside text-zinc-700 mb-4 space-y-1">{children}</ol>,
