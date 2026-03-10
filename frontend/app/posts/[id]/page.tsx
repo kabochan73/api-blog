@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import { getPost, getPosts, getTags } from "@/lib/api";
 import PostActions from "@/app/components/PostActions";
 import Footer from "@/app/components/Footer";
+import TagSearch from "@/app/components/TagSearch";
 import MarkdownContent from "@/app/components/MarkdownContent";
 import { formatDate } from "@/lib/date";
 
@@ -86,7 +87,7 @@ export default async function PostPage({ params }: Props) {
           }));
           if (headings.length === 0) return null;
           return (
-            <aside className="col-span-1 flex flex-col gap-4 sticky top-6">
+            <aside className="col-span-1 flex flex-col gap-4 sticky top-6 self-start">
               <div className="rounded-lg border border-zinc-200 bg-white p-4 shadow-sm">
                 <h2 className="text-base font-bold text-zinc-900 mb-4">目次</h2>
                 <ul className="space-y-2.5">
@@ -102,26 +103,7 @@ export default async function PostPage({ params }: Props) {
                   ))}
                 </ul>
               </div>
-              {allTags.length > 0 && (
-                <div className="rounded-lg border border-zinc-200 bg-white p-4 shadow-sm">
-                  <h2 className="text-base font-bold text-zinc-900 mb-4">タグ検索</h2>
-                  <div className="flex flex-wrap gap-2">
-                    {allTags.map((t) => (
-                      <Link
-                        key={t.id}
-                        href={`/?tag=${t.slug}`}
-                        className="inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-bold text-white transition-opacity hover:opacity-80"
-                        style={{ backgroundColor: t.color }}
-                      >
-                        {t.name}
-                        {t.posts_count !== undefined && (
-                          <span className="opacity-75">({t.posts_count})</span>
-                        )}
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-              )}
+              <TagSearch tags={allTags} />
               {relatedPosts.length > 0 && (
                 <div className="rounded-lg border border-zinc-200 bg-white p-4 shadow-sm">
                   <h2 className="text-base font-bold text-zinc-900 mb-4">関連記事</h2>

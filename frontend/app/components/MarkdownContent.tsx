@@ -1,20 +1,30 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
+// 見出しテキストをHTML idに使えるスラッグに変換（目次のアンカーリンク用）
 function toId(children: React.ReactNode) {
   return String(children).toLowerCase().replace(/\s+/g, "-").replace(/[^\w-]/g, "");
 }
 
+// コードブロック右上のコピーボタン
+// コピー後10秒間「OK!」を表示し、アンマウント時にタイマーをクリーンアップ
 function CopyButton({ text }: { text: string }) {
   const [copied, setCopied] = useState(false);
+
+  useEffect(() => {
+    if (!copied) return;
+    const timer = setTimeout(() => setCopied(false), 10000);
+    return () => clearTimeout(timer);
+  }, [copied]);
+
   function handleCopy() {
     navigator.clipboard.writeText(text);
     setCopied(true);
-    setTimeout(() => setCopied(false), 10000);
   }
+
   return (
     <button
       onClick={handleCopy}
@@ -25,11 +35,15 @@ function CopyButton({ text }: { text: string }) {
   );
 }
 
+// マークダウンをHTMLにレンダリングするコンポーネント
+// react-markdown + remark-gfm（テーブル・チェックボックスなど拡張記法）を使用
+// 各HTML要素にTailwindのスタイルを適用し、見出しには目次用のidを付与
 export default function MarkdownContent({ content }: { content: string }) {
   return (
     <ReactMarkdown
       remarkPlugins={[remarkGfm]}
       components={{
+        // 見出し：idを付与してアンカーリンクで飛べるようにする
         h1: ({ children }) => <h1 id={toId(children)} className="text-2xl font-bold text-zinc-900 mt-8 mb-4">{children}</h1>,
         h2: ({ children }) => <h2 id={toId(children)} className="text-xl font-bold text-zinc-900 mt-6 mb-3">{children}</h2>,
         h3: ({ children }) => <h3 id={toId(children)} className="text-lg font-semibold text-zinc-900 mt-5 mb-2">{children}</h3>,
@@ -40,6 +54,7 @@ export default function MarkdownContent({ content }: { content: string }) {
         blockquote: ({ children }) => (
           <blockquote className="border-l-4 border-zinc-300 pl-4 text-zinc-500 italic mb-4">{children}</blockquote>
         ),
+        // コード：インラインとブロックで見た目を切り替え
         code: ({ inline, children }: { inline?: boolean; children?: React.ReactNode }) =>
           inline ? (
             <code className="bg-zinc-100 rounded px-1 py-0.5 text-sm font-mono text-zinc-800">{children}</code>
@@ -48,12 +63,14 @@ export default function MarkdownContent({ content }: { content: string }) {
               {children}
             </code>
           ),
+        // preブロック：コピーボタンを右上に重ねて表示
         pre: ({ children }) => (
           <div className="relative mb-4">
             <pre className="bg-zinc-100 rounded-md p-4 overflow-x-auto">{children}</pre>
             <CopyButton text={String((children as React.ReactElement<{ children?: React.ReactNode }>)?.props?.children ?? "")} />
           </div>
         ),
+        // リンク：常に新しいタブで開く
         a: ({ href, children }) => (
           <a href={href} className="text-blue-600 hover:underline" target="_blank" rel="noopener noreferrer">
             {children}
@@ -61,6 +78,7 @@ export default function MarkdownContent({ content }: { content: string }) {
         ),
         hr: () => <hr className="border-zinc-200 my-6" />,
         strong: ({ children }) => <strong className="font-semibold text-zinc-900">{children}</strong>,
+        // テーブル：横スクロール対応
         table: ({ children }) => (
           <div className="overflow-x-auto mb-4">
             <table className="w-full border-collapse text-sm">{children}</table>

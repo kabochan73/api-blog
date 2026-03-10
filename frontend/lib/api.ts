@@ -1,15 +1,18 @@
+// APIのベースURL
 // サーバーサイド（Docker内）: API_URL、クライアントサイド（ブラウザ）: NEXT_PUBLIC_API_URL
 const API_BASE_URL =
   process.env.API_URL ?? process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000/api";
 
+// タグの型定義
 export type Tag = {
   id: number;
   name: string;
-  slug: string;
-  color: string;
-  posts_count?: number;
+  slug: string;       // URL用のスラッグ（英数字のみ）
+  color: string;      // カラーコード（例: #3b82f6）
+  posts_count?: number; // タグに紐づく投稿数（タグ一覧取得時のみ含まれる）
 };
 
+// 投稿の型定義
 export type Post = {
   id: number;
   user_id: number;
@@ -27,6 +30,15 @@ export type Post = {
   tags: Tag[];
 };
 
+// ページネーションレスポンスの型定義（汎用）
+export type PaginatedResponse<T> = {
+  data: T[];
+  current_page: number;
+  last_page: number;
+  total: number;
+};
+
+// ログイン：tokenを返す
 export async function login(email: string, password: string): Promise<string> {
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/login`, {
     method: "POST",
@@ -41,13 +53,7 @@ export async function login(email: string, password: string): Promise<string> {
   return data.token;
 }
 
-export type PaginatedResponse<T> = {
-  data: T[];
-  current_page: number;
-  last_page: number;
-  total: number;
-};
-
+// 投稿一覧を取得（ページネーション・タグ・キーワード絞り込み対応）
 export async function getPosts(page = 1, tag?: string, search?: string): Promise<PaginatedResponse<Post>> {
   const params = new URLSearchParams({ page: String(page) });
   if (tag) params.set("tag", tag);
@@ -57,6 +63,7 @@ export async function getPosts(page = 1, tag?: string, search?: string): Promise
   return res.json();
 }
 
+// 下書き一覧を全ページ取得（ページネーションをループで解決）
 export async function getDrafts(token: string): Promise<Post[]> {
   const drafts: Post[] = [];
   let page = 1;
@@ -76,6 +83,7 @@ export async function getDrafts(token: string): Promise<Post[]> {
   return drafts;
 }
 
+// 投稿1件を取得（tokenがあれば下書きも取得可能）
 export async function getPost(id: number, token?: string): Promise<Post> {
   const res = await fetch(`${API_BASE_URL}/posts/${id}`, {
     cache: "no-store",
@@ -85,12 +93,14 @@ export async function getPost(id: number, token?: string): Promise<Post> {
   return res.json();
 }
 
+// タグ一覧を取得
 export async function getTags(): Promise<Tag[]> {
   const res = await fetch(`${API_BASE_URL}/tags`);
   if (!res.ok) throw new Error("タグ一覧の取得に失敗しました");
   return res.json();
 }
 
+// タグを新規作成
 export async function createTag(name: string, color: string, token: string): Promise<Tag> {
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tags`, {
     method: "POST",
@@ -104,6 +114,7 @@ export async function createTag(name: string, color: string, token: string): Pro
   return res.json();
 }
 
+// タグを削除
 export async function deleteTag(id: number, token: string): Promise<void> {
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tags/${id}`, {
     method: "DELETE",
@@ -112,6 +123,7 @@ export async function deleteTag(id: number, token: string): Promise<void> {
   if (!res.ok) throw new Error("タグの削除に失敗しました");
 }
 
+// 投稿を削除
 export async function deletePost(id: number, token: string): Promise<void> {
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/posts/${id}`, {
     method: "DELETE",
@@ -120,6 +132,7 @@ export async function deletePost(id: number, token: string): Promise<void> {
   if (!res.ok) throw new Error("投稿の削除に失敗しました");
 }
 
+// 投稿を更新（タイトル・本文・ステータス・タグを変更可能）
 export async function updatePost(
   id: number,
   data: { title: string; body: string; status: "draft" | "published"; tag_ids: number[] },
@@ -140,6 +153,7 @@ export async function updatePost(
   return res.json();
 }
 
+// 投稿を新規作成
 export async function createPost(
   data: { title: string; body: string; status: "draft" | "published"; tag_ids: number[] },
   token: string

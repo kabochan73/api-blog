@@ -1,23 +1,21 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { deletePost } from "@/lib/api";
+import { useAuth } from "@/app/hooks/useAuth";
 
 type Props = {
   postId: number;
 };
 
+// 投稿の編集・削除ボタン
+// ログイン中のみ表示し、未ログインの場合はnullを返す
 export default function PostActions({ postId }: Props) {
   const router = useRouter();
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const { isLoggedIn } = useAuth();
 
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setIsLoggedIn(!!localStorage.getItem("token"));
-  }, []);
-
+  // 確認ダイアログを表示してから投稿を削除し、ホームへリダイレクト
   async function handleDelete() {
     if (!confirm("この投稿を削除しますか？")) return;
     const token = localStorage.getItem("token") ?? "";
@@ -26,6 +24,7 @@ export default function PostActions({ postId }: Props) {
     router.refresh();
   }
 
+  // 未ログインの場合は何も表示しない
   if (!isLoggedIn) return null;
 
   return (

@@ -6,14 +6,17 @@ import MarkdownContent from "./MarkdownContent";
 type Props = {
   value: string;
   onChange: (value: string) => void;
-  rows?: number;
+  rows?: number; // テキストエリアの行数（デフォルト12）
 };
 
+// マークダウンエディタ
+// 「編集」タブでテキスト入力、「プレビュー」タブでレンダリング結果を確認できる
 export default function MarkdownEditor({ value, onChange, rows = 12 }: Props) {
   const [tab, setTab] = useState<"edit" | "preview">("edit");
 
   return (
     <div className="mt-1">
+      {/* タブ切り替えボタン */}
       <div className="flex border-b border-zinc-300 mb-0">
         <button
           type="button"
@@ -39,6 +42,7 @@ export default function MarkdownEditor({ value, onChange, rows = 12 }: Props) {
         </button>
       </div>
 
+      {/* 編集タブ：テキストエリア */}
       {tab === "edit" ? (
         <textarea
           value={value}
@@ -49,6 +53,7 @@ export default function MarkdownEditor({ value, onChange, rows = 12 }: Props) {
           className="w-full rounded-b-md rounded-tr-md border border-zinc-300 px-3 py-2 text-sm font-mono outline-none focus:border-zinc-500"
         />
       ) : (
+        /* プレビュータブ：マークダウンをレンダリング */
         <div className="min-h-50 w-full rounded-b-md rounded-tr-md border border-zinc-300 px-4 py-3 bg-white">
           {value ? (
             <MarkdownContent content={value} />

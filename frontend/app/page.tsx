@@ -5,21 +5,30 @@ import { formatDate } from "@/lib/date";
 import Header from "@/app/components/Header";
 import PostActions from "@/app/components/PostActions";
 import Footer from "@/app/components/Footer";
+import TagSearch from "@/app/components/TagSearch";
 
 type Props = {
   searchParams: Promise<{ page?: string; tag?: string; search?: string }>;
 };
 
 export default async function Home({ searchParams }: Props) {
+  // URLクエリパラメータを取得
   const { page, tag, search } = await searchParams;
   const currentPage = Math.max(1, Number(page) || 1);
+
+  // 投稿一覧とタグ一覧を並行取得
   const [{ data: posts, last_page }, allTags] = await Promise.all([
     getPosts(currentPage, tag, search),
     getTags(),
   ]);
+
+  // 現在絞り込み中のタグ情報
   const activeTag = tag ? allTags.find((t) => t.slug === tag) : undefined;
+
+  // ログイン状態の確認（cookieのtokenで判定）
   const isLoggedIn = !!(await cookies()).get("token")?.value;
 
+  // ページネーションのURL生成（タグ・検索条件を維持）
   function pageHref(p: number) {
     const params = new URLSearchParams({ page: String(p) });
     if (tag) params.set("tag", tag);
@@ -36,6 +45,8 @@ export default async function Home({ searchParams }: Props) {
 
           {/* 投稿エリア (3/4) */}
           <div className="col-span-3">
+
+            {/* タグ絞り込み中のヘッダー */}
             {tag && (
               <div className="mb-6 flex items-center justify-between gap-3">
                 <div className="flex items-center gap-3">
@@ -55,6 +66,8 @@ export default async function Home({ searchParams }: Props) {
                 </Link>
               </div>
             )}
+
+            {/* 投稿が0件の場合 */}
             {posts.length === 0 ? (
               <div className="space-y-3">
                 <p className="text-zinc-500">投稿がまだありません。</p>
@@ -65,9 +78,12 @@ export default async function Home({ searchParams }: Props) {
                 )}
               </div>
             ) : (
+              /* 投稿カード一覧 */
               <ul className="space-y-6">
                 {posts.map((post) => (
                   <li key={post.id} className="rounded-lg border border-zinc-200 bg-white p-6 shadow-md transition-all duration-400 hover:-translate-y-1 hover:shadow-lg">
+
+                    {/* タイトルと編集・削除ボタン */}
                     <div className="flex items-start justify-between gap-4">
                       <Link href={`/posts/${post.id}`} className="group">
                         <h2 className="text-xl font-semibold text-zinc-900 group-hover:text-blue-600">
@@ -76,11 +92,15 @@ export default async function Home({ searchParams }: Props) {
                       </Link>
                       <PostActions postId={post.id} />
                     </div>
+
+                    {/* 本文冒頭プレビュー（マークダウン記号を除去） */}
                     {post.body && (
                       <p className="mt-3 text-sm text-zinc-500 line-clamp-3 max-w-lg">
                         {post.body.replace(/[#*`>\-_\[\]!]/g, "").trim().slice(0, 150)}
                       </p>
                     )}
+
+                    {/* タグと著者・投稿日 */}
                     <div className="mt-3 flex items-center justify-between gap-4">
                       {post.tags.length > 0 && (
                         <div className="flex flex-wrap gap-2 font-bold">
@@ -102,11 +122,13 @@ export default async function Home({ searchParams }: Props) {
                         <span>{formatDate(post.published_at ?? post.created_at)}</span>
                       </div>
                     </div>
+
                   </li>
                 ))}
               </ul>
             )}
 
+            {/* ページネーション */}
             {last_page > 1 && (
               <div className="mt-10 flex items-center justify-center gap-2">
                 {currentPage > 1 && (
@@ -137,29 +159,8 @@ export default async function Home({ searchParams }: Props) {
           </div>
 
           {/* タグサイドバー (1/4) */}
-          <aside className="col-span-1">
-            <div className="rounded-lg border border-zinc-200 bg-white p-4 shadow-sm sticky top-6">
-              <h2 className="text-sm font-semibold text-zinc-900 mb-3">タグ検索</h2>
-              {allTags.length === 0 ? (
-                <p className="text-xs text-zinc-400">タグがありません</p>
-              ) : (
-                <div className="flex flex-wrap gap-2">
-                  {allTags.map((t) => (
-                    <Link
-                      key={t.id}
-                      href={`/?tag=${t.slug}`}
-                      className="inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-bold text-white transition-opacity hover:opacity-80"
-                      style={{ backgroundColor: t.color }}
-                    >
-                      {t.name}
-                      {t.posts_count !== undefined && (
-                        <span className="opacity-75">({t.posts_count})</span>
-                      )}
-                    </Link>
-                  ))}
-                </div>
-              )}
-            </div>
+          <aside className="col-span-1 sticky top-6 self-start">
+            <TagSearch tags={allTags} />
           </aside>
 
         </div>

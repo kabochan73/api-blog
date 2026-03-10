@@ -3,16 +3,20 @@
 import Link from "next/link";
 import { useState, useRef } from "react";
 import { useRouter, usePathname } from "next/navigation";
+import { useAuth } from "@/app/hooks/useAuth";
+
+// サイト共通のヘッダー
+// ロゴ・検索バー・ナビゲーションを含む
 export default function Header() {
   const router = useRouter();
   const pathname = usePathname();
-  const [isLoggedIn, setIsLoggedIn] = useState(() => {
-    if (typeof window === "undefined") return false;
-    return !!localStorage.getItem("token");
-  });
+  const { isLoggedIn, logout } = useAuth();
   const [search, setSearch] = useState("");
+  // debounce用のタイマーを保持するref
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  // 入力から500ms後に検索リダイレクト（debounce処理）
+  // ページ遷移によるリダイレクトを防ぐため、useEffectではなくonChangeで管理
   function handleSearch(value: string) {
     setSearch(value);
     if (timerRef.current) clearTimeout(timerRef.current);
@@ -24,19 +28,19 @@ export default function Header() {
   }
 
   function handleLogout() {
-    localStorage.removeItem("token");
-    document.cookie = "token=; path=/; max-age=0";
-    setIsLoggedIn(false);
+    logout();
     router.push("/");
   }
 
   return (
     <header className="border-b border-zinc-200 bg-white">
       <div className="mx-auto flex max-w-3xl items-center justify-between gap-4 px-4 py-6">
+        {/* ロゴ */}
         <Link href="/" className="text-2xl font-bold text-zinc-900 shrink-0">
           My Output Blog
         </Link>
 
+        {/* 検索バー（/ と /drafts ページのみ表示） */}
         <div className="flex flex-1 max-w-sm">
           <input
             type="text"
@@ -47,6 +51,7 @@ export default function Header() {
           />
         </div>
 
+        {/* ログイン時のみナビゲーションを表示 */}
         {isLoggedIn && (
           <div className="flex items-center gap-3 shrink-0">
             <Link href="/drafts" className="text-sm font-medium text-zinc-600 hover:text-zinc-900">
