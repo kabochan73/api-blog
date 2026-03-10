@@ -1,9 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef } from "react";
 import { useRouter, usePathname } from "next/navigation";
-
 export default function Header() {
   const router = useRouter();
   const pathname = usePathname();

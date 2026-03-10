@@ -1,10 +1,28 @@
 "use client";
 
+import { useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
 function toId(children: React.ReactNode) {
   return String(children).toLowerCase().replace(/\s+/g, "-").replace(/[^\w-]/g, "");
+}
+
+function CopyButton({ text }: { text: string }) {
+  const [copied, setCopied] = useState(false);
+  function handleCopy() {
+    navigator.clipboard.writeText(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 10000);
+  }
+  return (
+    <button
+      onClick={handleCopy}
+      className="absolute top-2 right-2 rounded px-2 py-1 text-xs text-zinc-400 hover:text-zinc-900 hover:bg-zinc-200 transition-colors"
+    >
+      {copied ? "OK !" : "copy"}
+    </button>
+  );
 }
 
 export default function MarkdownContent({ content }: { content: string }) {
@@ -26,11 +44,16 @@ export default function MarkdownContent({ content }: { content: string }) {
           inline ? (
             <code className="bg-zinc-100 rounded px-1 py-0.5 text-sm font-mono text-zinc-800">{children}</code>
           ) : (
-            <code className="block bg-zinc-100 rounded-md p-4 text-sm font-mono text-zinc-800 overflow-x-auto mb-4 whitespace-pre">
+            <code className="block text-sm font-mono text-zinc-800 overflow-x-auto whitespace-pre">
               {children}
             </code>
           ),
-        pre: ({ children }) => <pre className="mb-4">{children}</pre>,
+        pre: ({ children }) => (
+          <div className="relative mb-4">
+            <pre className="bg-zinc-100 rounded-md p-4 overflow-x-auto">{children}</pre>
+            <CopyButton text={String((children as React.ReactElement<{ children?: React.ReactNode }>)?.props?.children ?? "")} />
+          </div>
+        ),
         a: ({ href, children }) => (
           <a href={href} className="text-blue-600 hover:underline" target="_blank" rel="noopener noreferrer">
             {children}
