@@ -76,25 +76,32 @@ export default async function Home({ searchParams }: Props) {
                       </Link>
                       <PostActions postId={post.id} />
                     </div>
-                    <div className="mt-2 flex items-center gap-3 text-sm text-zinc-500">
-                      <span>{post.user.name}</span>
-                      <span>·</span>
-                      <span>{formatDate(post.published_at ?? post.created_at)}</span>
-                    </div>
-                    {post.tags.length > 0 && (
-                      <div className="mt-3 flex flex-wrap gap-2">
-                        {post.tags.map((t) => (
-                          <Link
-                            key={t.id}
-                            href={`/?tag=${t.slug}`}
-                            className="rounded-full px-3 py-1 text-xs text-white transition-opacity hover:opacity-80"
-                            style={{ backgroundColor: t.color }}
-                          >
-                            {t.name}
-                          </Link>
-                        ))}
-                      </div>
+                    {post.body && (
+                      <p className="mt-3 text-sm text-zinc-500 line-clamp-3 max-w-lg">
+                        {post.body.replace(/[#*`>\-_\[\]!]/g, "").trim().slice(0, 150)}
+                      </p>
                     )}
+                    <div className="mt-3 flex items-center justify-between gap-4">
+                      {post.tags.length > 0 && (
+                        <div className="flex flex-wrap gap-2 font-bold">
+                          {post.tags.map((t) => (
+                            <Link
+                              key={t.id}
+                              href={`/?tag=${t.slug}`}
+                              className="rounded-full px-3 py-1 text-xs text-white transition-opacity hover:opacity-80"
+                              style={{ backgroundColor: t.color }}
+                            >
+                              {t.name}
+                            </Link>
+                          ))}
+                        </div>
+                      )}
+                      <div className="flex items-center gap-3 text-sm text-zinc-500">
+                        <span>{post.user.name}</span>
+                        <span>·</span>
+                        <span>{formatDate(post.published_at ?? post.created_at)}</span>
+                      </div>
+                    </div>
                   </li>
                 ))}
               </ul>
@@ -141,7 +148,7 @@ export default async function Home({ searchParams }: Props) {
                     <Link
                       key={t.id}
                       href={`/?tag=${t.slug}`}
-                      className="inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs text-white transition-opacity hover:opacity-80"
+                      className="inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-bold text-white transition-opacity hover:opacity-80"
                       style={{ backgroundColor: t.color }}
                     >
                       {t.name}
