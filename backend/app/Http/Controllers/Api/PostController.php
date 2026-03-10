@@ -17,6 +17,8 @@ class PostController extends Controller
         $user = auth('sanctum')->user();
         if (!$user?->is_admin) {
             $query->where('status', 'published');
+        } elseif ($request->filled('status')) {
+            $query->where('status', $request->status);
         }
 
         if ($request->filled('tag')) {

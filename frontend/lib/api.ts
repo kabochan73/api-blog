@@ -58,13 +58,22 @@ export async function getPosts(page = 1, tag?: string, search?: string): Promise
 }
 
 export async function getDrafts(token: string): Promise<Post[]> {
-  const res = await fetch(`${API_BASE_URL}/posts`, {
-    cache: "no-store",
-    headers: { Authorization: `Bearer ${token}` },
-  });
-  if (!res.ok) throw new Error("下書き一覧の取得に失敗しました");
-  const paginated: PaginatedResponse<Post> = await res.json();
-  return paginated.data.filter((p) => p.status === "draft");
+  const drafts: Post[] = [];
+  let page = 1;
+
+  while (true) {
+    const res = await fetch(`${API_BASE_URL}/posts?status=draft&page=${page}`, {
+      cache: "no-store",
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!res.ok) throw new Error("下書き一覧の取得に失敗しました");
+    const paginated: PaginatedResponse<Post> = await res.json();
+    drafts.push(...paginated.data);
+    if (page >= paginated.last_page) break;
+    page++;
+  }
+
+  return drafts;
 }
 
 export async function getPost(id: number, token?: string): Promise<Post> {

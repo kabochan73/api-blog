@@ -23,6 +23,7 @@ export default async function Home({ searchParams }: Props) {
   function pageHref(p: number) {
     const params = new URLSearchParams({ page: String(p) });
     if (tag) params.set("tag", tag);
+    if (search) params.set("search", search);
     return `/?${params}`;
   }
 
