@@ -7,27 +7,22 @@ import { useRouter, usePathname } from "next/navigation";
 export default function Header() {
   const router = useRouter();
   const pathname = usePathname();
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return !!localStorage.getItem("token");
+  });
   const [search, setSearch] = useState("");
-  const isMounted = useRef(false);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  useEffect(() => {
-    setIsLoggedIn(!!localStorage.getItem("token"));
-  }, []);
-
-  useEffect(() => {
-    if (!isMounted.current) {
-      isMounted.current = true;
-      return;
-    }
-    const base = pathname === "/drafts" ? "/drafts" : "/";
-    const timer = setTimeout(() => {
-      const q = search.trim();
+  function handleSearch(value: string) {
+    setSearch(value);
+    if (timerRef.current) clearTimeout(timerRef.current);
+    timerRef.current = setTimeout(() => {
+      const base = pathname === "/drafts" ? "/drafts" : "/";
+      const q = value.trim();
       router.push(q ? `${base}?search=${encodeURIComponent(q)}` : base);
     }, 500);
-    return () => clearTimeout(timer);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [search, pathname]);
+  }
 
   function handleLogout() {
     localStorage.removeItem("token");
@@ -47,7 +42,7 @@ export default function Header() {
           <input
             type="text"
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => handleSearch(e.target.value)}
             placeholder="記事を検索..."
             className="w-full rounded-md border border-zinc-300 px-3 py-1.5 text-sm outline-none focus:border-zinc-500"
           />
