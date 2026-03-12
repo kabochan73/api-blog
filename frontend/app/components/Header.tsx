@@ -37,7 +37,7 @@ export default function Header() {
       <div className="mx-auto flex max-w-3xl items-center justify-between gap-4 px-4 py-6">
         {/* ロゴ */}
         <Link href="/" className="text-2xl font-bold text-zinc-900 shrink-0">
-          My Output Blog
+          My Output Blog(最強)
         </Link>
 
         {/* 検索バー（/ と /drafts ページのみ表示） */}
