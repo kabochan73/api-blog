@@ -8,7 +8,9 @@ return [
         env('FRONTEND_URL', ''),
         'https://api-blog-navy.vercel.app',
     ],
-    'allowed_origins_patterns' => [],
+    'allowed_origins_patterns' => [
+        '#^https://api-blog-.*\.vercel\.app$#',
+    ],
     'allowed_headers' => ['*'],
     'exposed_headers' => [],
     'max_age' => 0,
