@@ -5,7 +5,8 @@ return [
     'allowed_methods' => ['*'],
     'allowed_origins' => [
         'http://localhost:3000',
-        env('FRONTEND_URL', 'https://api-blog-psi.vercel.app'),
+        env('FRONTEND_URL', ''),
+        'https://api-blog-navy.vercel.app',
     ],
     'allowed_origins_patterns' => [],
     'allowed_headers' => ['*'],
